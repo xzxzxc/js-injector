@@ -32,6 +32,10 @@ async function getCurrentTabUrl() {
   return tabs[0].url;
 }
 
+const defaultText = `callWhen(
+  () => $('body').length > 0,
+  () => { console.log("Hello world!") });`
+
 document.addEventListener('DOMContentLoaded', async function () {
   document.getElementById("save").onclick = save;
   document.getElementById("remove").onclick = remove;
@@ -46,9 +50,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
     pageData = pageData ?? {
       urlRegex: `^${escapeRegExp(tab_url)}$`,
-      text: `callWhen(
-      () => $('body').length > 0,
-      () => { console.log("Hello world!") });`
+      text: defaultText,
     };
 
     document.getElementById("url_text").value = pageData.urlRegex;
