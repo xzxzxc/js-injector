@@ -4,6 +4,7 @@
   "dependencies": {
     "jquery": "latest",
     "sval": "latest",
-    "monaco-editor": "latest"
+    "monaco-editor": "latest",
+    "@types/jquery": "latest"
   }
 }
