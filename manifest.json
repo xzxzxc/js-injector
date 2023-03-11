@@ -10,7 +10,7 @@
 
   "action": {
     "default_icon": "logo.png",
-    "default_popup": "popup.html"
+    "default_popup": "src/popup/popup.html"
   },
 
   "permissions": [
@@ -25,14 +25,14 @@
       "js": [
         "node_modules/jquery/dist/jquery.min.js",
         "node_modules/sval/dist/sval.min.js",
-        "content_script.js"
+        "src/content_script.js"
       ],
       "run_at": "document_idle"
     }
   ],
 
   "web_accessible_resources": [{
-    "resources": ["injected.js", "dist/*"],
+    "resources": ["src/injected.js", "dist/*"],
     "matches": ["http://*/*", "https://*/*"]
   }],
 
