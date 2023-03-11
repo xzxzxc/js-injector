@@ -1,6 +1,8 @@
-﻿function save() {
+﻿require.config({ paths: { vs: './node_modules/monaco-editor/min/vs' } });
+
+function save() {
   var tab_url = document.getElementById("url_text").value;
-  var js_text = document.getElementById("js_text").value;
+  var js_text = window.editor.getValue();
 
   chrome.storage.sync.get("container", function (items) {
     var container = items.container ?? {};
@@ -10,7 +12,7 @@
   });
 }
 
-function remove(){
+function remove() {
   var tab_url = document.getElementById("url_text").value;
   chrome.storage.sync.get("container", function (items) {
     var container = items.container;
@@ -33,25 +35,29 @@ async function getCurrentTabUrl() {
 document.addEventListener('DOMContentLoaded', async function () {
   document.getElementById("save").onclick = save;
   document.getElementById("remove").onclick = remove;
-  var tab_url = await getCurrentTabUrl();
+  let tab_url = await getCurrentTabUrl();
 
   chrome.storage.sync.get("container", function (items) {
-    var container = items.container;
-    var matched = false;
-    for (var key_url in container)
-    {
+    let container = items.container;
+    let pageData = null;
+    for (var key_url in container) {
       if (tab_url.match(new RegExp(key_url)))
-      {
-        var js_text = container[key_url];
-        document.getElementById("url_text").value = key_url;
-        document.getElementById("js_text").value = js_text;
-        matched = true;
-      }
+        pageData = { urlRegex: key_url, text: container[key_url] }
     }
-    if (!matched)
-    {
-      document.getElementById("url_text").value = "^" + escapeRegExp(tab_url) + "$";
-    }
+    pageData = pageData ?? {
+      urlRegex: `^${escapeRegExp(tab_url)}$`,
+      text: `callWhen(
+      () => $('body').length > 0,
+      () => { console.log("Hello world!") });`
+    };
+
+    document.getElementById("url_text").value = pageData.urlRegex;
+    require(['vs/editor/editor.main'], function () {
+      window.editor = monaco.editor.create(document.getElementById('container'), {
+        value: pageData.text,
+        language: 'javascript',
+      });
+    });
   });
 });
 
