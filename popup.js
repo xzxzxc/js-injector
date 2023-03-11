@@ -32,9 +32,11 @@ async function getCurrentTabUrl() {
   return tabs[0].url;
 }
 
-const defaultText = `callWhen(
-  () => $('body').length > 0,
-  () => { console.log("Hello world!") });`
+const defaultText = `callWhen({
+  predicate: () => $('body').length > 0,
+  action: () => { console.log("Hello world!") },
+  endless: false,
+});`
 
 document.addEventListener('DOMContentLoaded', async function () {
   document.getElementById("save").onclick = save;

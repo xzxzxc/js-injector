@@ -1,12 +1,16 @@
 ﻿// helper functions available for all page scripts
 const commonFunctions = `
-const callWhen = (predicate, action, checkInterval = 1000) => {
-  if (predicate()) {
-    console.log('calling action');
-    action();
-  }
-  else{
-    setTimeout(()=>callWhen(predicate, action, checkInterval), checkInterval);
+Promise.delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const callWhen = async ({ predicate, action, endless, checkInterval } = { endless: false, checkInterval: 1000 }) => {
+  while (true) {
+    if (predicate()) {
+      console.log('calling action');
+      action();
+      if (!endless) {
+        break;
+      }
+    }
+    await Promise.delay(checkInterval);
   }
 };
 `;
