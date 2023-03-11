@@ -1,34 +1,34 @@
-﻿function save() {
-  var tab_url = document.getElementById("url_text").value;
-  var js_text = window.editor.getValue();
+﻿const save = () => {
+  const tab_url = document.getElementById("url_text").value;
+  const js_text = window.editor.getValue();
 
-  chrome.storage.sync.get("container", function (items) {
-    var container = items.container ?? {};
+  chrome.storage.sync.get("container", items => {
+    const container = items.container ?? {};
 
     container[tab_url] = js_text;
     chrome.storage.sync.set({container: container});
   });
-}
+};
 
-function remove() {
-  var tab_url = document.getElementById("url_text").value;
-  chrome.storage.sync.get("container", function (items) {
-    var container = items.container;
+const remove = () => {
+  const tab_url = document.getElementById("url_text").value;
+  chrome.storage.sync.get("container", items => {
+    const container = items.container;
 
     container[tab_url] = undefined;
     chrome.storage.sync.set({container: container});
   });
-}
+};
 
-function escapeRegExp(string) {
+const escapeRegExp = string => {
   return string.replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&'); // $& means the whole matched string
-}
+};
 
-async function getCurrentTabUrl() {
+const getCurrentTabUrl = async () => {
   let queryOptions = {active: true, currentWindow: true};
   let tabs = await chrome.tabs.query(queryOptions);
   return tabs[0].url;
-}
+};
 
 const defaultText = `callWhen({
   predicate: () => $('body').length > 0,
@@ -36,9 +36,9 @@ const defaultText = `callWhen({
   endless: false,
 });`
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
   require.config({paths: {vs: '../../node_modules/monaco-editor/min/vs'}});
-  require(['vs/editor/editor.main'], async function () {
+  require(['vs/editor/editor.main'], async () => {
     for (const fileName of ['jquery.d.ts', 'common.d.ts']) {
       const fileUri = `./dist/${fileName}`;
       const fileText = await (await fetch(chrome.runtime.getURL(fileUri))).text();
@@ -50,10 +50,10 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById("remove").onclick = remove;
     let tab_url = await getCurrentTabUrl();
 
-    chrome.storage.sync.get("container", function (items) {
+    chrome.storage.sync.get("container", items => {
       let container = items.container;
       let pageData = null;
-      for (var key_url in container) {
+      for (const key_url in container) {
         if (tab_url.match(new RegExp(key_url)))
           pageData = {urlRegex: key_url, text: container[key_url]}
       }
